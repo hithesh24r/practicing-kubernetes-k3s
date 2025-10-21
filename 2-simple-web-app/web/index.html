@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Themed Dashboard</title>
+    <style>
+        /* Basic reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Full-screen video background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        /* Container styling */
+        #container {
+            position: relative;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        /* Toggle button for theme */
+        #sunMoonToggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        #themeIcon {
+            fill: white;
+            transition: fill 0.3s;
+        }
+
+        /* Button container */
+        #buttonContainer {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 15;
+            position: relative;
+        }
+
+        /* Button styles */
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 15px;
+            padding: 15px 30px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.1);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 20%, transparent 60%);
+            transition: transform 0.5s;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        button:hover::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* Theme modes */
+        .dark-mode {
+            color: #fff;
+        }
+
+        .light-mode {
+            color: #000;
+        }
+
+        .light-mode button {
+            background: rgba(0, 0, 0, 0.3);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Video Background -->
+    <video class="video-background" autoplay muted loop>
+        <source src="space-background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div id="container">
+        <div id="sunMoonToggle" onclick="toggleTheme()">
+            <!-- Sun and Moon Icons as SVGs -->
+            <svg id="themeIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="5" stroke="white" stroke-width="2"/>
+                <path d="M12 1v2" stroke="white" stroke-width="2"/>
+                <path d="M12 21v2" stroke="white" stroke-width="2"/>
+                <path d="M4.22 4.22l1.42 1.42" stroke="white" stroke-width="2"/>
+                <path d="M18.36 18.36l1.42 1.42" stroke="white" stroke-width="2"/>
+                <path d="M1 12h2" stroke="white" stroke-width="2"/>
+                <path d="M21 12h2" stroke="white" stroke-width="2"/>
+                <path d="M4.22 19.78l1.42-1.42" stroke="white" stroke-width="2"/>
+                <path d="M18.36 5.64l1.42-1.42" stroke="white" stroke-width="2"/>
+            </svg>
+        </div>
+        <div id="buttonContainer"></div>
+    </div>
+
+    <script>
+        // Function to fetch JSON data
+        async function fetchJsonData() {
+            try {
+                const response = await fetch('data.json');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('There has been a problem with your fetch operation:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const jsonData = await fetchJsonData();
+
+            if (jsonData) {
+                // Populate buttons
+                const buttonContainer = document.getElementById('buttonContainer');
+                jsonData.buttons.forEach(button => {
+                    const btn = document.createElement('button');
+                    btn.innerText = button.name;
+                    btn.onclick = () => window.location.href = button.url;
+                    buttonContainer.appendChild(btn);
+                });
+            }
+
+            // Default theme is dark mode
+            document.body.classList.add('dark-mode');
+        });
+
+        function toggleTheme() {
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            if (isDarkMode) {
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+                document.getElementById('themeIcon').setAttribute('viewBox', '0 0 24 24');
+                document.getElementById('themeIcon').innerHTML = `
+                    <circle cx="12" cy="12" r="6" stroke="black" stroke-width="2"/>
+                    <path d="M12 3v2" stroke="black" stroke-width="2"/>
+                    <path d="M12 19v2" stroke="black" stroke-width="2"/>
+                    <path d="M4.22 4.22l1.42 1.42" stroke="black" stroke-width="2"/>
+                    <path d="M18.36 18.36l1.42 1.42" stroke="black" stroke-width="2"/>
+                    <path d="M3 12h2" stroke="black" stroke-width="2"/>
+                    <path d="M19 12h2" stroke="black" stroke-width="2"/>
+                    <path d="M4.22 19.78l1.42-1.42" stroke="black" stroke-width="2"/>
+                    <path d="M18.36 5.64l1.42-1.42" stroke="black" stroke-width="2"/>
+                `;
+            } else {
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeIcon').setAttribute('viewBox', '0 0 24 24');
+                document.getElementById('themeIcon').innerHTML = `
+                    <circle cx="12" cy="12" r="5" stroke="white" stroke-width="2"/>
+                    <path d="M12 1v2" stroke="white" stroke-width="2"/>
+                    <path d="M12 21v2" stroke="white" stroke-width="2"/>
+                    <path d="M4.22 4.22l1.42 1.42" stroke="white" stroke-width="2"/>
+                    <path d="M18.36 18.36l1.42 1.42" stroke="white" stroke-width="2"/>
+                    <path d="M1 12h2" stroke="white" stroke-width="2"/>
+                    <path d="M21 12h2" stroke="white" stroke-width="2"/>
+                    <path d="M4.22 19.78l1.42-1.42" stroke="white" stroke-width="2"/>
+                    <path d="M18.36 5.64l1.42-1.42" stroke="white" stroke-width="2"/>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

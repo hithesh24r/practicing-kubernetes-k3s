@@ -1,0 +1,7 @@
+{
+    "buttons": [
+        { "name": "Google", "url": "https://www.google.com/" },
+        { "name": "Apple", "url": "https://www.apple.com/" },
+        { "name": "Youtube", "url": "https://www.youtube.com/" }
+    ]
+}
